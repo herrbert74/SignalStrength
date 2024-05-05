@@ -1,6 +1,5 @@
 package com.zsoltbertalan.signalstrength.data.network.dto
 
-import com.babestudios.base.data.mapNullInputList
 import com.zsoltbertalan.signalstrength.domain.model.MobileAvailability
 
 @Suppress("PropertyName")
@@ -50,33 +49,29 @@ data class MobileAvailabilityDto(
 }
 
 fun MobileAvailabilityDto.toMobileAvailability() = MobileAvailability(
-	provision = mapNullInputList(this.Availability, MobileAvailabilityDto.AvailabilityDto::toProvision),
+	provision = this.Availability?.associate { (it.AddressShortDescription ?: "") to it.toProvision() } ?: emptyMap(),
 	postcode = this.PostCode
 )
 
 fun MobileAvailabilityDto.AvailabilityDto.toProvision() = MobileAvailability.Provision(
-	this.AddressShortDescription,
 	this.UPRN,
 	this.PostCode,
-	MobileAvailability.ProviderData(
-		"EE",
-		this.EEDataIndoor, this.EEDataIndoorNo4g, this.EEDataOutdoor, this.EEDataOutdoorNo4g,
-		this.EEVoiceIndoor, this.EEVoiceIndoorNo4g, this.EEVoiceOutdoor, this.EEVoiceOutdoorNo4g
-	),
-	MobileAvailability.ProviderData(
-		"Three",
-		this.H3DataIndoor, this.H3DataIndoorNo4g, this.H3DataOutdoor, this.H3DataOutdoorNo4g,
-		this.H3VoiceIndoor, this.H3VoiceIndoorNo4g, this.H3VoiceOutdoor, this.H3VoiceOutdoorNo4g
-	),
-	MobileAvailability.ProviderData(
-		"TF",
-		this.TFDataIndoor, this.TFDataIndoorNo4g, this.TFDataOutdoor, this.TFDataOutdoorNo4g,
-		this.TFVoiceIndoor, this.TFVoiceIndoorNo4g, this.TFVoiceOutdoor, this.TFVoiceOutdoorNo4g
-	),
-	MobileAvailability.ProviderData(
-		"VO",
-		this.VODataIndoor, this.VODataIndoorNo4g, this.VODataOutdoor, this.VODataOutdoorNo4g,
-		this.VOVoiceIndoor, this.VOVoiceIndoorNo4g, this.VOVoiceOutdoor, this.VOVoiceOutdoorNo4g
-	),
+	mapOf(
+		"EE" to MobileAvailability.ProviderData(
+			this.EEDataIndoor, this.EEDataIndoorNo4g, this.EEDataOutdoor, this.EEDataOutdoorNo4g,
+			this.EEVoiceIndoor, this.EEVoiceIndoorNo4g, this.EEVoiceOutdoor, this.EEVoiceOutdoorNo4g
+		),
+		"Three" to MobileAvailability.ProviderData(
+			this.H3DataIndoor, this.H3DataIndoorNo4g, this.H3DataOutdoor, this.H3DataOutdoorNo4g,
+			this.H3VoiceIndoor, this.H3VoiceIndoorNo4g, this.H3VoiceOutdoor, this.H3VoiceOutdoorNo4g
+		),
+		"O2" to MobileAvailability.ProviderData(
+			this.TFDataIndoor, this.TFDataIndoorNo4g, this.TFDataOutdoor, this.TFDataOutdoorNo4g,
+			this.TFVoiceIndoor, this.TFVoiceIndoorNo4g, this.TFVoiceOutdoor, this.TFVoiceOutdoorNo4g
+		),
+		"Vodafone" to MobileAvailability.ProviderData(
+			this.VODataIndoor, this.VODataIndoorNo4g, this.VODataOutdoor, this.VODataOutdoorNo4g,
+			this.VOVoiceIndoor, this.VOVoiceIndoorNo4g, this.VOVoiceOutdoor, this.VOVoiceOutdoorNo4g
+		)
+	)
 )
-

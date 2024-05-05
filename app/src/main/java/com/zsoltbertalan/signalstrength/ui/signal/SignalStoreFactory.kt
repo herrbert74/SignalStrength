@@ -39,9 +39,9 @@ class SignalStoreFactory(
 	private object SignalReducer : Reducer<State, Message> {
 		override fun State.reduce(msg: Message): State =
 			when (msg) {
-				is Message.PostcodeChanged -> copy(postcode = msg.postcode, canContinue = msg.canBeShown)
+				is Message.PostcodeChanged -> copy(postcode = msg.postcode, canContinue = msg.canBeShown, error = null)
 				is Message.ShowAvailability -> copy(signal = msg.signal)
-				is Message.ShowError -> copy(error = msg.throwable)
+				is Message.ShowError -> copy(signal = null, error = msg.throwable)
 			}
 	}
 

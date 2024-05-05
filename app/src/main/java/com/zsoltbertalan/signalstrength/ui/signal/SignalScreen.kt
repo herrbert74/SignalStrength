@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -25,22 +27,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.toSize
 import com.arkivanov.decompose.DefaultComponentContext
 import com.arkivanov.decompose.extensions.compose.jetbrains.subscribeAsState
 import com.arkivanov.essenty.lifecycle.LifecycleRegistry
-import com.babestudios.base.compose.design.smallDimensions
+import com.zsoltbertalan.signalstrength.design.Colors
 import com.zsoltbertalan.signalstrength.design.Dimens
 import com.zsoltbertalan.signalstrength.design.SignalStrengthTheme
 import com.zsoltbertalan.signalstrength.design.SignalStrengthTypography
+import com.zsoltbertalan.signalstrength.ui.component.SignalDashboard
 import com.zsoltbertalan.signalstrength.ui.defaultSignalExecutor
 import com.zsoltbertalan.signalstrength.ui.signal.SignalStore.SideEffect.Initial
 
@@ -64,13 +62,19 @@ private fun SignalScaffold(
 	sideEffect: SignalStore.SideEffect
 ) {
 
-	var isExpanded by rememberSaveable { mutableStateOf(false) }
+	val reusableModifier = Modifier.padding(bottom = Dimens.marginLarge)
+	var isAddressExpanded by rememberSaveable { mutableStateOf(false) }
+	var isProviderExpanded by rememberSaveable { mutableStateOf(false) }
 
-	var selectedText by rememberSaveable { mutableStateOf("") }
+	var selectedAddress by rememberSaveable { mutableStateOf("") }
+	var selectedProvider by rememberSaveable { mutableStateOf("EE") }
 
-	var textFieldSize by remember { mutableStateOf(Size.Zero) }
+	val addressIcon = if (isAddressExpanded)
+		Icons.Filled.KeyboardArrowUp
+	else
+		Icons.Filled.KeyboardArrowDown
 
-	val icon = if (isExpanded)
+	val providerIcon = if (isProviderExpanded)
 		Icons.Filled.KeyboardArrowUp
 	else
 		Icons.Filled.KeyboardArrowDown
@@ -91,6 +95,8 @@ private fun SignalScaffold(
 		Column(
 			modifier = Modifier
 				.padding(innerPadding)
+				.verticalScroll(rememberScrollState())
+				.padding(horizontal = Dimens.marginLarge)
 				.fillMaxSize()
 		) {
 
@@ -99,76 +105,115 @@ private fun SignalScaffold(
 			Text(
 				text = "Please enter your postcode",
 				modifier = Modifier
-					.padding(Dimens.marginLarge),
+					.padding(top = Dimens.marginLarge, bottom = Dimens.marginNormal),
 				style = SignalStrengthTypography.labelLarge
 			)
 			TextField(
-				modifier = Modifier.padding(Dimens.marginLarge),
+				modifier = reusableModifier,
 				value = postcode,
 				onValueChange = {
 					postcode = it
+					selectedAddress = ""
 					component.postcodeChanged(it)
 				},
-				label = { Text("Postcode") }
+				label = { Text("Postcode") },
+				supportingText = {
+					if (model.error != null) {
+						Text(text = model.error.message ?: "")
+					} else Text(text = "")
+				},
+				trailingIcon = {
+					if (model.error != null)
+						Icon(Icons.Filled.Warning, "error", tint = Colors.error)
+				},
+				isError = model.error != null,
 			)
-
-			if (model.signal != null) {
-				Column(Modifier.padding(horizontal = Dimens.marginLarge, vertical = Dimens.marginNormal)) {
-
-					OutlinedTextField(
-						value = selectedText,
-						onValueChange = { selectedText = it },
-						modifier = Modifier
-							.fillMaxWidth()
-							.onGloballyPositioned { coordinates ->
-								textFieldSize = coordinates.size.toSize()
-							},
-						label = { Text("Choose your address") },
-						trailingIcon = {
-							Icon(
-								icon,
-								"contentDescription",
-								Modifier.clickable { isExpanded = !isExpanded }
-							)
-						}
-					)
-
-					DropdownMenu(
-						expanded = isExpanded,
-						onDismissRequest = { isExpanded = false },
-						modifier = Modifier
-							.padding(horizontal = Dimens.marginLarge, vertical = Dimens.marginLarge)
-							.width(with(LocalDensity.current) { textFieldSize.width.toDp() })
-					) {
-						model.signal.provision?.forEach { label ->
-							DropdownMenuItem(
-								text = { Text(label?.addressShortDescription ?: "") },
-								onClick = {
-									selectedText = label?.addressShortDescription ?: ""
-									isExpanded = false
-								})
-						}
-					}
-				}
-			}
-			if (selectedText.isNotEmpty()) {
-				Text(
-					model.signal?.provision?.getOrNull(0)?.addressShortDescription ?: "",
-					modifier = Modifier
-						.padding(
-							horizontal = smallDimensions.marginLarge,
-							vertical = smallDimensions.marginNormal,
-						)
-				)
-			}
-			Spacer(modifier = Modifier.weight(1f))
 			Button(
-				modifier = Modifier.padding(Dimens.marginLarge),
+				modifier = reusableModifier,
 				enabled = model.canContinue,
 				onClick = { component.onGetAvailabilityClicked() }
 			) {
 				Text("Check Signal Strength")
 			}
+
+			if (model.canContinue && model.signal != null) {
+				Column() {
+
+					OutlinedTextField(
+						value = selectedAddress,
+						onValueChange = { selectedAddress = it },
+						modifier = reusableModifier
+							.fillMaxWidth(),
+						label = { Text("Choose your address") },
+						trailingIcon = {
+							Icon(
+								addressIcon,
+								"Address dropdown icon",
+								Modifier.clickable { isAddressExpanded = !isAddressExpanded }
+							)
+						}
+					)
+
+					DropdownMenu(
+						expanded = isAddressExpanded,
+						onDismissRequest = { isAddressExpanded = false },
+						modifier = Modifier
+							.padding(horizontal = Dimens.marginLarge, vertical = Dimens.marginLarge)
+					) {
+						model.signal.provision.forEach { label ->
+							DropdownMenuItem(
+								text = { Text(label.key) },
+								onClick = {
+									selectedAddress = label.key
+									isAddressExpanded = false
+								}
+							)
+						}
+					}
+
+					if (selectedAddress.isNotEmpty()) {
+						OutlinedTextField(
+							value = selectedProvider,
+							onValueChange = { selectedProvider = it },
+							modifier = reusableModifier
+								.fillMaxWidth(),
+							label = { Text("Choose your provider") },
+							trailingIcon = {
+								Icon(
+									providerIcon,
+									"Provider dropdown icon",
+									Modifier.clickable { isProviderExpanded = !isProviderExpanded }
+								)
+							}
+						)
+
+						DropdownMenu(
+							expanded = isProviderExpanded,
+							onDismissRequest = { isProviderExpanded = false },
+							modifier = reusableModifier
+						) {
+							model.signal.provision[selectedAddress]?.providers?.keys?.forEach { provider ->
+								DropdownMenuItem(
+									text = { Text(provider) },
+									onClick = {
+										selectedProvider = provider
+										isProviderExpanded = false
+									}
+								)
+							}
+						}
+					}
+
+				}
+			}
+			if (selectedAddress.isNotEmpty()) {
+				model.signal?.provision?.get(selectedAddress)?.providers?.get(selectedProvider)?.let {
+					SignalDashboard(
+						selectedProvider, it,
+					)
+				}
+			}
+			Spacer(modifier = Modifier.weight(1f))
 		}
 	}
 }
