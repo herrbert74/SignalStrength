@@ -8,6 +8,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -45,8 +46,9 @@ class NetworkModule {
 	@Singleton
 	fun provideSignalStrengthRepository(
 		signalStrengthService: SignalStrengthService,
+		@IoDispatcher ioContext: CoroutineDispatcher
 	): SignalStrengthRepository {
-		return SignalStrengthAccessor(signalStrengthService)
+		return SignalStrengthAccessor(signalStrengthService, ioContext)
 	}
 
 }

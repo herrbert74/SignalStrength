@@ -19,6 +19,7 @@ internal fun createSignalFactory(
 		componentContext = childContext,
 		signalExecutor = SignalExecutor(signalStrengthRepository, mainContext, ioContext),
 		output = output,
+		mainContext = mainContext,
 		finishHandler = finishHandler,
 	)
 }

@@ -39,7 +39,8 @@ class SignalStrengthRootComponent internal constructor(
 	private val stack = childStack(
 		source = navigation,
 		initialStack = { listOf(Configuration.Signal) },
-		handleBackButton = true,
+		saveStack = { null },
+		restoreStack = { null },
 		childFactory = ::createChild
 	)
 

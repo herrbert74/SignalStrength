@@ -2,8 +2,6 @@ package com.zsoltbertalan.signalstrength.ui.component
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -11,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.zsoltbertalan.signalstrength.design.Colors
 import com.zsoltbertalan.signalstrength.design.Dimens
+import com.zsoltbertalan.signalstrength.design.SignalStrengthTheme
 import com.zsoltbertalan.signalstrength.domain.model.MobileAvailability
-import com.zsoltbertalan.signalstrength.ui.theme.SignalStrengthTheme
 
 @Composable
 fun SignalDashboard(name:String, providerData: MobileAvailability.ProviderData) {
@@ -40,7 +38,7 @@ fun SignalDashboard(name:String, providerData: MobileAvailability.ProviderData) 
 		SignalRow(
 			signal1 = providerData.voiceIndoor,
 			signalName1 = "Voice Indoor",
-			signal2 = providerData.voiceOtdoorNo4Group,
+			signal2 = providerData.voiceOutdoorNo4Group,
 			signalName2 = "Voice Indoor No 4G",
 			provider = name
 		)

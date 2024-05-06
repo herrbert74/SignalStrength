@@ -14,8 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.zsoltbertalan.signalstrength.R
 import com.zsoltbertalan.signalstrength.design.Colors
 import com.zsoltbertalan.signalstrength.design.Dimens
+import com.zsoltbertalan.signalstrength.design.SignalStrengthTheme
 import com.zsoltbertalan.signalstrength.design.SignalStrengthTypography
-import com.zsoltbertalan.signalstrength.ui.theme.SignalStrengthTheme
 
 @Composable
 fun SignalIcon(signal: Int, provider: String) {

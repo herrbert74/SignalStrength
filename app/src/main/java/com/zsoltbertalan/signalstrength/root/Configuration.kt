@@ -1,10 +1,11 @@
 package com.zsoltbertalan.signalstrength.root
 
-import com.arkivanov.essenty.parcelable.Parcelable
-import com.arkivanov.essenty.parcelable.Parcelize
+import kotlinx.serialization.Serializable
 
-sealed class Configuration : Parcelable {
+@Serializable
+sealed class Configuration {
 
-    @Parcelize
-    data object Signal : Configuration()
+	@Serializable
+	data object Signal : Configuration()
+
 }

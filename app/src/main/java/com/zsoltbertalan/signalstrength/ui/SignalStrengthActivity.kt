@@ -16,31 +16,31 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class SignalStrengthActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var signalStrengthRepository: SignalStrengthRepository
+	@Inject
+	lateinit var signalStrengthRepository: SignalStrengthRepository
 
-    @Inject
-    @MainDispatcher
-    lateinit var mainContext: CoroutineDispatcher
+	@Inject
+	@MainDispatcher
+	lateinit var mainContext: CoroutineDispatcher
 
-    @Inject
-    @IoDispatcher
-    lateinit var ioContext: CoroutineDispatcher
+	@Inject
+	@IoDispatcher
+	lateinit var ioContext: CoroutineDispatcher
 
-    private lateinit var signalStrengthRootComponent: SignalStrengthRootComponent
+	private lateinit var signalStrengthRootComponent: SignalStrengthRootComponent
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        signalStrengthRootComponent = SignalStrengthRootComponent(
-            DefaultComponentContext(lifecycle, savedStateRegistry, viewModelStore, null),
-            mainContext,
-            ioContext,
-            signalStrengthRepository
-        ) { finish() }
+	override fun onCreate(savedInstanceState: Bundle?) {
+		super.onCreate(savedInstanceState)
+		signalStrengthRootComponent = SignalStrengthRootComponent(
+			DefaultComponentContext(lifecycle, savedStateRegistry, viewModelStore, null),
+			mainContext,
+			ioContext,
+			signalStrengthRepository
+		) { finish() }
 
-        setContent {
-            SignalStrengthRootContent(signalStrengthRootComponent)
-        }
-    }
+		setContent {
+			SignalStrengthRootContent(signalStrengthRootComponent)
+		}
+	}
 
 }

@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.zsoltbertalan.signalstrength.ui.theme.SignalStrengthTheme
+import com.zsoltbertalan.signalstrength.design.SignalStrengthTheme
 
 @Composable
 fun SignalRow(signal1: Int, signalName1: String, signal2: Int, signalName2: String, provider: String) {

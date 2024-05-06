@@ -3,10 +3,12 @@
 plugins {
 	alias(libs.plugins.android.application)
 	alias(libs.plugins.android.kotlin)
-	id("kotlin-parcelize")
 	alias(libs.plugins.ksp)
 	id("dagger.hilt.android.plugin")
+	kotlin("plugin.serialization") version libs.versions.kotlin
 }
+
+val ofcomAccessToken: String by project
 
 android {
 
@@ -21,6 +23,7 @@ android {
 		compileSdk = 34
 		targetSdk = 34
 		testInstrumentationRunner = "com.zsoltbertalan.signalstrength.SignalStrengthAndroidJUnitRunner"
+		buildConfigField("String", "ofcomAccessToken", ofcomAccessToken)
 	}
 
 	buildTypes {
@@ -94,7 +97,6 @@ dependencies {
 	implementation(libs.decompose.extensionsJetBrains)
 	implementation(libs.kotlinResult.result)
 	implementation(libs.kotlinResult.coroutines)
-	implementation(libs.kotlin.parcelize.runtime)
 	implementation(libs.mvikotlin.core)
 	implementation(libs.mvikotlin.coroutines)
 	implementation(libs.mvikotlin.main)
@@ -156,5 +158,9 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
 	kotlinOptions.freeCompilerArgs += "-opt-in=androidx.compose.ui.test.ExperimentalTestApi"
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+	kotlinOptions.freeCompilerArgs += "-opt-in=kotlinx.coroutines.FlowPreview"
 }
 
