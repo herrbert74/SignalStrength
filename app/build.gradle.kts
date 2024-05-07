@@ -73,10 +73,6 @@ android {
 
 dependencies {
 
-	implementation(libs.baBeStudios.base.android)
-	implementation(libs.baBeStudios.base.compose)
-	implementation(libs.baBeStudios.base.data)
-	implementation(libs.baBeStudios.base.kotlin)
 	implementation(libs.androidx.activity.compose)
 	implementation(libs.androidx.appcompat)
 	implementation(platform(libs.androidx.compose.bom))
